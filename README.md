@@ -21,4 +21,3 @@ Bill of Materials:
 4x Relays
 1x 30mm fan
 1x Bag of rice starch (for PM emitter)
-![image](https://github.com/Michael-Robert1/HawkA-Eye/assets/123036405/304850c2-6750-4823-b8f9-b89eebb2fd8c)
