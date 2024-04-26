@@ -1,6 +1,19 @@
 # HawkA-Eye
+GROUP MEMBERS LINKEDINS:
 
-Bill of Materials:
+Michael Robert - linkedin.com/in/michaelrobert12
+
+John Sabovik - linkedin.com/in/john-sabovik-5b752b2b1
+
+Melvin Ayala - linkedin.com/in/melvin-ayala-9bb5b4241
+
+Mohammad Almarri - linkedin.com/in/mohammad-almarri-7a3a47305
+
+PROBLEM STATEMENT: How can we create a product using sensors and AI to create a smarter and safer campus?​​ How can we create an interactive, fun, and informative display that HSB can use to showcase their smart technology?​​
+
+RATIONALE: According to Bankrate, between the years 2016-2020 there were an average of 74,950 house fires per year caused by heating equipment and electrical equipment with an average property loss of $2.4 billion per year.​
+
+BILL OF MATERIALS:
 6x 12x12x0.125” clear acrylic sheet
 2x 120mm computer fans
 3x PIR motion sensors
