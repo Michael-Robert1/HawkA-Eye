@@ -34,3 +34,8 @@ BILL OF MATERIALS:
 4x Relays
 1x 30mm fan
 1x Bag of rice starch (for PM emitter)
+
+
+Files include the code for the product as well as all of the 3d files to create the product
+
+
