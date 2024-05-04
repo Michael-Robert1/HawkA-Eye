@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="120">
+    <title>Hawk A-Eye Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="http://192.168.1.6/logo.png">
+    <style>
+      @import url("https://code.highcharts.com/css/highcharts.css");
+      @import url("https://code.highcharts.com/dashboards/css/dashboards.css");
+      #gauge-row, #title-row {
+        width: 90%;
+        margin: auto;
+      }
+      #vision-layout, #airQuality-layout, #GPT-layout {
+        border-style: solid;
+        border-radius: 10px;
+        border-width: 2px;
+      }
+      #vision-layout-container, #vision-layout-title {
+        flex:1;
+      }
+      #airQuality-layout-container, #airQuality-layout-title {
+        flex:3;
+      }
+      #GPT-layout-container, #GPT-layout-title {
+        flex:2;
+      }
+      #vision-layout-title, #airQuality-layout-title, #GPT-layout-title {
+        height: 50px;
+      }
+      #vision-layout-container, #airQuality-layout-container, #GPT-layout-container {
+        margin-left:10px;
+        margin-right:10px;
+      }
+
+      html {
+  	    max-width: 100%;
+  	    overflow-x: hidden;
+  	    background-color: black;
+    	}
+
+	   .highcharts-dashboards-wrapper{
+  	  	max-width: 100%;
+  	  	overflow-x: hidden;
+  	  	border-radius: 20px;
+  	  	font-family: "Montserrat", sans-serif !important;
+	    }
+	  .highcharts-dashboards-cell > .highcharts-dashboards-component {
+        background-color: transparent;
+        box-shadow: none;
+    }
+    .highcharts-background{
+      fill: transparent;
+    }
+    h1 {
+      text-align: center;
+      font-size: 60px;
+      margin: -5px;
+      margin-top: -15px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 40px;
+      color: #3eca16;
+      margin: -2px;
+      margin-top: -4px;
+      font-weight: 200;
+    }
+    .title-button{
+      border-style: solid;
+      border-radius: 10px;
+      border-width: 0px;
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    </style>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+    <script src="https://code.highcharts.com/dashboards/dashboards.js"></script>
+    <script src="https://code.highcharts.com/dashboards/modules/layout.js"></script>
+
+  </head>
+  <body>
+      <div id="container">
+  </body>
+  <script>
+
+    /*Highcharts.setOptions({
+        chart: {
+          type: 'areaspline'
+        },
+        legend: {
+            enabled: false
+        },
+        credits: false,
+        tooltip: {
+            valueSuffix: '%',
+            stickOnContact: true
+        },
+        xAxis: {
+            type: 'datetime',
+        },
+        yAxis: {
+            title: {
+                enabled: false
+            }
+        }
+    });
+*/
+
+    const kpiGaugeOptions = {
+        chart: {
+            spacing: [-8,-8,-8,-8],
+            type: 'solidgauge',
+        },
+        pane: {
+            background: {
+                innerRadius: '90%',
+                outerRadius: '120%',
+                shape: 'arc'
+            },
+            center: ['50%', '70%'],
+            endAngle: 90,
+            startAngle: -90
+        },
+        yAxis: {
+            labels: {
+                distance: '105%',
+                y: 5,
+                align: 'auto'
+            },
+            lineWidth: 2,
+            minorTicks: false,
+            tickWidth: 2,
+            tickAmount: 2,
+            visible: true
+        },
+        series: [{
+            dataLabels: {
+                format: '{y:.1f}',
+                y: -25
+            },
+            innerRadius: '90%',
+            radius: '120%'
+        }],
+    };
+
+
+
+    const dashboard = Dashboards.board('container', {
+        dataPool: {
+            connectors: [{
+                id: 'sensorData',
+                type: 'CSV',
+                options: {
+                    csvURL: '/HawkAEyeData.csv',
+                	enablePolling: true,
+                    dataRefreshRate: 1
+                }
+            }]
+        },
+        gui: {
+            layouts: [{
+                id: 'main-layout',
+                rows: [{
+      	        	  cells: [{
+      					        id: 'title'
+      	            }]
+      	        },{
+      	            cells: [{
+        					      id: 'gpt-notes'
+        				    },{
+        	              id: 'gpt-indicator'
+      	            }]
+      	        },{
+      	            id: 'title-row',
+      	            cells: [{
+      	                id: 'vision-layout-title',
+      	            },{
+      	                id: 'GPT-layout-title',
+      	            },{
+      	                id: 'airQuality-layout-title',
+      	            }]
+      	        },{
+      	            id: 'gauge-row',
+      	            cells: [{
+      	                id: 'vision-layout-container',
+          	            layout: {
+          	                id: 'vision-layout',
+            	              rows: [{
+            	                  cells: [{
+            	                      id: 'motion-indicator'
+            	                  }]
+          	                },{
+          	                    cells: [{
+            	                      id: 'light-dial'
+            	                  }]
+          	                }]
+          	            }
+      	            },{
+      	                id: 'GPT-layout-container',
+      	                layout: {
+      	                    id: 'GPT-layout',
+      	                    rows: [{
+            	                  cells: [{
+            	                      id: 'GPT-Image'
+            	                  },{
+            	                      id: 'GPT-Text'
+            	                  }]
+          	                }]
+      	                }
+      	            },{
+      	                id: 'airQuality-layout-container',
+      	                layout: {
+      	                    id: 'airQuality-layout',
+      	                    rows: [{
+            	                  cells: [{
+            	                      id: 'temp-dial'
+            	                  },{
+            	                      id: 'hum-dial'
+            	                  },{
+            	                      id: 'pres-dial'
+            	                  }]
+          	                },{
+          	                    cells: [{
+            	                      id: 'aqi-dial'
+            	                  },{
+            	                      id: 'tvoc-dial'
+            	                  },{
+            	                      id: 'co2-dial'
+            	                  }]
+          	                }]
+      	                }
+      	            }]
+      	        },{
+  	                cells: [{
+  	                    id: 'horizontal-rule'
+  	                }]
+  	            },{
+  	                cells: [{
+    	                  id: 'data-graph'
+  	                }]
+
+  	            }]
+            }]
+        },
+        components: [{
+            type: 'HTML',
+            renderTo: 'title',
+            elements: [
+                {
+                    tagName: 'h1',
+                    textContent: 'Hawk A-Eye Dashboard'
+                }
+            ]
+        },{
+            type: 'HTML',
+            renderTo: 'vision-layout-title',
+            elements: [
+                {
+                    tagName: 'h2',
+                    textContent: 'Vision',
+                    attributes: {
+                        class: 'title-button'
+
+                    }
+                }
+            ]
+        },{
+            type: 'HTML',
+            renderTo: 'airQuality-layout-title',
+            elements: [
+                {
+                    tagName: 'h2',
+                    textContent: 'Environmental',
+                    attributes: {
+                        class: 'title-button'
+
+                    }
+                }
+            ],
+            events: {
+                click: function () {
+
+                     // Update board
+                    activeParam = paramConfig.vision;
+
+                    dashboard.redraw();
+                    alert();
+                }
+            },
+            states: {
+                active: {
+                    enabled: true
+                },
+                hover: {
+                    enabled: true
+                }
+            }
+        },{
+            type: 'HTML',
+            renderTo: 'GPT-layout-title',
+            elements: [
+                {
+                    tagName: 'h2',
+                    textContent: 'GPT-4 Vision',
+                    attributes: {
+                        class: 'title-button'
+
+                    }
+                }
+            ]
+        },{
+            type: 'HTML',
+            renderTo: 'GPT-Image',
+            elements: [
+                {
+                    tagName: 'img',
+                    attributes: {
+                        src: '/latestPhoto.jpg'
+
+                    }
+                }
+            ]
+        },{
+            type: 'HTML',
+            renderTo: 'GPT-Text',
+            elements: [
+                {
+                    tagName: 'p',
+                    textContent: 'All Clear!',
+                    attributes: {
+                        class: 'title-button',
+                        align: 'center'
+
+                    }
+                }
+            ]
+        },{
+            renderTo: 'motion-indicator',
+            type: 'KPI',
+            connector: {
+               id: 'sensorData'
+            },
+            columnName: 'Motion',
+            title: {
+              text: "Motion",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                    ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 1
+                }
+            }
+
+        },{
+            type: 'HTML',
+            renderTo: 'horizontal-rule',
+            elements: [
+                {
+                    tagName: 'hr'
+                }
+            ]
+        },{
+            renderTo: 'light-dial',
+            type: 'KPI',
+            columnName: 'Light',
+            title: {
+              text: "Light (%)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                    ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 100
+                }
+            }
+        },{
+            renderTo: 'temp-dial',
+            type: 'KPI',
+            columnName: 'Temp',
+            title: {
+              text: "Temp (F)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 50,
+                    max: 100
+                }
+            }
+        },{
+            renderTo: 'hum-dial',
+            type: 'KPI',
+            columnName: 'Humidity',
+            title: {
+              text: "Humidity (RH%)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 100
+                }
+            }
+        },{
+            renderTo: 'pres-dial',
+            type: 'KPI',
+            columnName: 'Pressure',
+            title: {
+              text: "Pressure (Pa)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 102000,
+                    max: 103000
+                }
+            }
+        },{
+            renderTo: 'aqi-dial',
+            type: 'KPI',
+            columnName: 'AQI',
+            title: {
+              text: "Air Quality Index",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 500
+                }
+            }
+        },{
+            renderTo: 'co2-dial',
+            type: 'KPI',
+            columnName: 'Co2',
+            title: {
+              text: "Co2 (ppm)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 5000
+                }
+            }
+        },{
+            renderTo: 'tvoc-dial',
+            type: 'KPI',
+            columnName: 'TVOC',
+            title: {
+              text: "Total VOC (ppb)",
+              style: {
+                fontSize: "20px",
+                margin: "-2px"
+              }
+            },
+            connector: {
+               id: 'sensorData'
+            },
+            valueFormat: ' ',
+            chartOptions: {
+                chart: kpiGaugeOptions.chart,
+                series: kpiGaugeOptions.series,
+                pane: kpiGaugeOptions.pane,
+                yAxis: {
+                  ...kpiGaugeOptions.yAxis,
+                    min: 0,
+                    max: 5000
+                }
+            }
+        },{
+            renderTo: 'data-graph',
+            type: 'Highcharts',
+            connector: {
+                id: 'sensorData',
+                columnAssignment: [{
+					seriesId: 'temp',
+					data: ['Time', 'Temp']
+					},{
+					seriesId: 'hum',
+					data: ['Time', 'Humidity']
+					},{
+					seriesId: 'pres',
+					data: ['Time', 'Pressure']
+					},{
+					seriesId: 'aqi',
+					data: ['Time', 'AQI']
+					},{
+					seriesId: 'tvoc',
+					data: ['Time', 'TVOC']
+					},{
+					seriesId: 'co2',
+					data: ['Time', 'Co2']
+				}]
+			},
+
+			chartOptions: {
+				title: {
+					text: 'Air Quality Sensors'
+				},
+				exporting: {
+					enabled: false
+				},
+				chart: {
+					type: "spline",
+					polar: false,
+					zoomType: "x"
+				},
+				plotOptions: {
+					series: {
+						dataLabels: {
+							enabled: true
+						}
+					}
+				},
+				yAxis: [{
+					min: 50,
+					max: 100,
+					visible: false
+					},{
+					min: 0,
+					max: 100,
+					visible: false
+					},{
+					min: 102000,
+					max: 103000,
+					visible: false
+					},{
+					min: 0,
+					max: 500,
+					visible: false
+					},{
+					min: 0,
+					max: 5000,
+					visible: false
+					},{
+					min: 0,
+					max: 5000,
+					visible: false
+				}],
+				series: [{
+					id: 'temp',
+					name: 'Temperature (F)',
+					yAxis: 0
+					},{
+					id: 'hum',
+					name: 'Humidity (RH%)',
+					yAxis: 1
+					},{
+					id: 'pres',
+					name: 'Pressure (Pa)',
+					yAxis: 2
+					},{
+					id: 'aqi',
+					name: 'Air Quality Index',
+					yAxis: 3
+					},{
+					id: 'tvoc',
+					name: 'Total VOC (ppb)',
+					yAxis: 4
+					},{
+					id: 'co2',
+					name: 'Co2 (ppm)',
+					yAxis: 5
+				}],
+				legend: {
+					align: "right",
+					floating: true,
+					verticalAlign: "top"
+				},
+				credits: {
+					enabled: false
+				}
+			}
+        }]
+    })
+
+
+  </script>
+</html>
